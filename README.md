@@ -69,7 +69,7 @@ struct { char magic[4]="NKP1"; uint32 stream_id; uint32 seq; } + PCM   // PCM �
 **方式二：源码**
 
 ```bash
-git clone https://github.com/wslxacgm/N.E.K.O.-PASSPORT.git
+git clone https://github.com/wslxacgm/N.E.K.O-PASSPORT.git
 uv sync          # 依赖见 pyproject.toml / uv.lock
 ```
 
