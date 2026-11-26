@@ -1,0 +1,16 @@
+[plugin_runtime]
+enabled = true
+auto_start = false
+
+[bridge]
+host = "0.0.0.0"
+port = 8765
+# 自动发现：监听 UDP 8766，回应设备的局域网广播，设备无需填写电脑 IP。
+discovery = true
+token = "neko-passport-dev"
+cache_capacity = 128
+whisper_model = "base"
+whisper_language = ""
+local_files_only = false
+max_audio_seconds = 30
+panel_auto_open = true
