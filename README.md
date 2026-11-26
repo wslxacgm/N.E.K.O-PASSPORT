@@ -54,42 +54,32 @@ struct { char magic[4]="NKP1"; uint32 stream_id; uint32 seq; } + PCM   // PCM �
 
 `reply_text` 按 192 字节分片，带 `part` / `parts` / `final`；`tts` 与 `audio_out` 用 `state = start | done` 包住一段播放。未确认包进 128 条待确认缓存，设备 `ack` 后移除。
 
-## 安装（插件）
+## 安装
 
-**方式一：导入插件包（推荐）**
-
-1. 从 Releases 下载 `neko_passport_bridge.neko-plugin`。
-2. N.E.K.O → 插件管理 →「导入插件包」→ 选择该文件。若提示“目标插件目录目前由你手动维护”，选「替换并接管」。
-3. 启用插件，并打开「开机自启」。
-4. 首次启动插件会给 N.E.K.O 前端注入音频镜像钩子，日志出现 `NEKO Passport: 已注入音频镜像钩子` 后，**重启一次 N.E.K.O** 让页面加载新 JS。
-5. 面板地址：`http://127.0.0.1:8765/`（启动时会自动打开）。
-
-插件包已内置依赖，安装时无需联网拉取。
-
-**方式二：源码**
+本仓库只提供插件源码，不提供打包好的 `.neko-plugin` 安装包，也不提供预编译固件。
 
 ```bash
 git clone https://github.com/wslxacgm/N.E.K.O-PASSPORT.git
+cd N.E.K.O-PASSPORT
 uv sync          # 依赖见 pyproject.toml / uv.lock
 ```
 
-将目录放入 N.E.K.O 的插件位置，或通过插件管理器的本地目录导入。
+把该目录放到 N.E.K.O 的插件目录，或通过插件管理器的「本地目录」导入，然后：
+
+1. 启用插件，并打开「开机自启」。
+2. 首次启动会给 N.E.K.O 前端注入音频镜像钩子，日志出现 `NEKO Passport: 已注入音频镜像钩子` 后，**重启一次 N.E.K.O** 让页面加载新 JS。
+3. 面板地址：`http://127.0.0.1:8765/`（启动时会自动打开）。
+
+依赖按 `pyproject.toml` / `uv.lock` 在首次运行时从网络拉取，不再随包分发。
 
 ## 固件
 
-Release 附件里有两个固件：
+设备端固件不在本仓库内，本仓库也不发布预编译固件。设备需要运行与下文协议兼容的固件（`NKA1` / `NKP1` 分帧、连接 `ws://<PC-IP>:8765`），可以自行构建，也可以使用你已有的版本。
 
-| 文件 | 用途 | 刷入地址 |
-|---|---|---|
-| `FoloToy-AI-Passport-factory.bin` | 整片固件，新设备或整片擦除后使用 | `0x0` |
-| `FoloToy-AI-Passport-app.bin` | 仅应用分区，保留 Wi-Fi 配网信息 | `0x10000` |
+刷写参考（ESP32-C3、8 MB flash，仅刷应用分区时保留配网信息）：
 
 ```bash
-# 整片
-esptool.py --chip esp32c3 -p COMx -b 460800 write_flash 0x0 FoloToy-AI-Passport-factory.bin
-
-# 仅应用
-esptool.py --chip esp32c3 -p COMx -b 460800 write_flash 0x10000 FoloToy-AI-Passport-app.bin
+esptool.py --chip esp32c3 -p COMx -b 460800 write_flash 0x10000 <your-app.bin>
 ```
 
 Windows 下可用 `python -m esptool` 代替 `esptool.py`。
@@ -152,4 +142,4 @@ neko-passport/
 
 [Apache License 2.0](./LICENSE)。插件代码基于 N.E.K.O 插件 SDK（同样为 Apache-2.0）开发。
 
-仓库不包含 N.E.K.O 的角色素材、Live2D 模型、音色文件或 FoloToy 固件之外的第三方资产；这些资产各自适用其原始许可。
+本仓库仅包含插件源码，不附带任何角色素材、Live2D 模型、音色文件或固件二进制；这些资产各自由其原作者许可，与本仓库的 Apache-2.0 无关。
