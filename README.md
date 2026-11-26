@@ -56,7 +56,17 @@ struct { char magic[4]="NKP1"; uint32 stream_id; uint32 seq; } + PCM   // PCM �
 
 ## 安装
 
-本仓库只提供插件源码，不提供打包好的 `.neko-plugin` 安装包，也不提供预编译固件。
+**方式一：导入插件包（推荐）**
+
+1. 从 [Releases](https://github.com/wslxacgm/N.E.K.O-PASSPORT/releases/latest) 下载 `neko_passport_bridge.neko-plugin`。
+2. N.E.K.O → 插件管理 →「导入插件包」→ 选择该文件。若提示“目标插件目录目前由你手动维护”，选「替换并接管」。
+3. 启用插件，并打开「开机自启」。
+4. 首次启动会给 N.E.K.O 前端注入音频镜像钩子，日志出现 `NEKO Passport: 已注入音频镜像钩子` 后，**重启一次 N.E.K.O** 让页面加载新 JS。
+5. 面板地址：`http://127.0.0.1:8765/`（启动时会自动打开）。
+
+插件包已内置依赖，安装时无需联网拉取。
+
+**方式二：源码**
 
 ```bash
 git clone https://github.com/wslxacgm/N.E.K.O-PASSPORT.git
@@ -64,22 +74,23 @@ cd N.E.K.O-PASSPORT
 uv sync          # 依赖见 pyproject.toml / uv.lock
 ```
 
-把该目录放到 N.E.K.O 的插件目录，或通过插件管理器的「本地目录」导入，然后：
-
-1. 启用插件，并打开「开机自启」。
-2. 首次启动会给 N.E.K.O 前端注入音频镜像钩子，日志出现 `NEKO Passport: 已注入音频镜像钩子` 后，**重启一次 N.E.K.O** 让页面加载新 JS。
-3. 面板地址：`http://127.0.0.1:8765/`（启动时会自动打开）。
-
-依赖按 `pyproject.toml` / `uv.lock` 在首次运行时从网络拉取，不再随包分发。
+把该目录放到 N.E.K.O 的插件目录，或通过插件管理器的「本地目录」导入，同样启用插件、开启自启，并重启一次让前端 JS 生效。
 
 ## 固件
 
-设备端固件不在本仓库内，本仓库也不发布预编译固件。设备需要运行与下文协议兼容的固件（`NKA1` / `NKP1` 分帧、连接 `ws://<PC-IP>:8765`），可以自行构建，也可以使用你已有的版本。
+Release 中提供两个设备固件（ESP32-C3，8 MB flash）：
 
-刷写参考（ESP32-C3、8 MB flash，仅刷应用分区时保留配网信息）：
+| 文件 | 用途 | 刷入地址 |
+|---|---|---|
+| `FoloToy-AI-Passport-factory.bin` | 整片固件，新设备或整片擦除后使用 | `0x0` |
+| `FoloToy-AI-Passport-app.bin` | 仅应用分区，保留 Wi-Fi 配网信息 | `0x10000` |
 
 ```bash
-esptool.py --chip esp32c3 -p COMx -b 460800 write_flash 0x10000 <your-app.bin>
+# 整片
+esptool.py --chip esp32c3 -p COMx -b 460800 write_flash 0x0 FoloToy-AI-Passport-factory.bin
+
+# 仅应用
+esptool.py --chip esp32c3 -p COMx -b 460800 write_flash 0x10000 FoloToy-AI-Passport-app.bin
 ```
 
 Windows 下可用 `python -m esptool` 代替 `esptool.py`。
@@ -142,4 +153,4 @@ neko-passport/
 
 [Apache License 2.0](./LICENSE)。插件代码基于 N.E.K.O 插件 SDK（同样为 Apache-2.0）开发。
 
-本仓库仅包含插件源码，不附带任何角色素材、Live2D 模型、音色文件或固件二进制；这些资产各自由其原作者许可，与本仓库的 Apache-2.0 无关。
+本仓库源码不附带任何角色素材、Live2D 模型或音色文件；Releases 中的固件为设备端构建产物，同样不含上述素材。第三方资产各自由其原作者许可，与本仓库的 Apache-2.0 无关。
